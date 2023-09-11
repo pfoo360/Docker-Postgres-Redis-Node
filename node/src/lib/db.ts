@@ -24,12 +24,13 @@ const insert = async ({ username, password, email }) => {
   }
 };
 
-const select = async ({ value }) => {
+const select = async (o) => {
   const db = await pool.connect();
+  const [[key, value]] = Object.entries(o);
+  const query = `SELECT * FROM users WHERE ${key}=$1`;
+
   try {
-    const res = await db.query("SELECT * FROM users WHERE username=$1", [
-      value,
-    ]);
+    const res = await db.query(query, [value]);
     return res.rows;
   } catch (err) {
     console.log(err);
