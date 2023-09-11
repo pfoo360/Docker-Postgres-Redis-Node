@@ -1,5 +1,6 @@
 import { Pool } from "pg";
 import fs from "fs";
+import { Insert, Select } from "../types/types";
 
 //postgresql:{user}:{password}@{host}:{port}/{db}
 
@@ -9,7 +10,7 @@ const databaseUrl =
 
 const pool = new Pool({ connectionString: databaseUrl });
 
-const insert = async ({ username, password, email }) => {
+const insert = async ({ username, password, email }: Insert) => {
   const db = await pool.connect();
   try {
     const res = await db.query(
@@ -24,13 +25,14 @@ const insert = async ({ username, password, email }) => {
   }
 };
 
-const select = async (o) => {
+const select = async (o: Select) => {
   const db = await pool.connect();
   const [[key, value]] = Object.entries(o);
   const query = `SELECT * FROM users WHERE ${key}=$1`;
 
   try {
     const res = await db.query(query, [value]);
+    console.log(res.rows);
     return res.rows;
   } catch (err) {
     console.log(err);
