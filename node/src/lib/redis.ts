@@ -29,7 +29,7 @@ const get = async ({ key }) => {
 
   try {
     const value = await redis.get(key);
-    console.log(value);
+    return value;
   } catch (err) {
     console.log(err);
   } finally {

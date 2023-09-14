@@ -1,5 +1,6 @@
 import express from "express";
 import { postgres } from "./lib/postgres";
+import { get, set } from "./lib/redis";
 import { Insert } from "./types/types";
 
 const PORT = process.env.PORT || 3000;
@@ -18,17 +19,34 @@ app.get("/query", async (req, res) => {
 
   //if querying by 'id' col we use '... WHERE id = ...' stmnt
   //if querying by any other col we use '... WHERE [col_name] ILIKE ...' smnt
-  const queryString = `SELECT * FROM users WHERE ${key} ${
+  const querySubstring = `SELECT * FROM users WHERE ${key} ${
     key === "id" ? "=" : "ILIKE"
-  } $1`;
+  } `;
+
+  const redisRes = await get({ key: `${querySubstring}${value}` });
+  if (redisRes)
+    return res
+      .status(200)
+      .send({ message: "Result found in cache", result: JSON.parse(redisRes) });
+
   //if querying by any col besides 'id' we have to add % wildcard char
   const valuesArr = [`${key === "id" ? value : `%${value}%`}`];
 
   try {
-    const pg_res = await postgres({ queryString, valuesArr });
+    const pg_res = await postgres({
+      queryString: `${querySubstring}$1`,
+      valuesArr,
+    });
     console.log(pg_res);
 
-    res.status(200).send({ message: "SELECT success" });
+    set({
+      key: `${querySubstring}${value}`,
+      value: JSON.stringify(pg_res.rows),
+    });
+
+    res
+      .status(200)
+      .send({ message: "Result found in DB", result: pg_res.rows });
   } catch (err) {
     console.log(err);
     res.status(500).send({ message: "An error occured" });
