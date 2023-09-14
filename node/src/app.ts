@@ -37,9 +37,6 @@ app.get("/query", async (req, res) => {
       valuesArr: [`${key === "id" ? value : `%${value}%`}`],
     });
 
-    if (!rows.length)
-      return res.status(404).send({ message: "Does not exist" });
-
     await set({
       key: `${querySubstring}${value}`,
       value: JSON.stringify(rows),
