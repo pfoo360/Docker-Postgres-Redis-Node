@@ -46,8 +46,11 @@ app.get("/query", async (req, res) => {
       .status(200)
       .send({ message: "Result found in DB", result: rows });
   } catch (err) {
+    console.log("POSTGRES ERROR");
     console.log(err);
-    return res.status(500).send({ message: "An error occured" });
+    return res
+      .status(500)
+      .send({ message: "An error occured querying the DB" });
   }
 });
 
