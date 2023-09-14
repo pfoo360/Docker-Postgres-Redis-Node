@@ -61,13 +61,13 @@ app.post("/", async (req, res) => {
       .status(400)
       .send({ message: "Missing username, password, and/or email" });
 
-  const queryString =
-    "INSERT INTO users(username, password, email) VALUES($1::text, $2::text, $3::text)";
-  const valuesArr = [username, password, email];
-
   try {
-    const pg_res = await postgres({ queryString, valuesArr });
-    console.log(pg_res);
+    const { rows } = await postgres({
+      queryString:
+        "INSERT INTO users(username, password, email) VALUES($1::text, $2::text, $3::text) RETURNING id, username, password, email, created_at, session_token",
+      valuesArr: [username, password, email],
+    });
+    console.log(rows);
 
     res.status(200).send({ message: "INSERT success" });
   } catch (err) {
