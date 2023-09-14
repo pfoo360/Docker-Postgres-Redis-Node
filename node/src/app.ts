@@ -69,10 +69,13 @@ app.post("/", async (req, res) => {
     });
     console.log(rows);
 
-    return res.status(200).send({ message: "INSERT success" });
+    return res.status(200).send({ message: "INSERT success", result: rows });
   } catch (err) {
+    console.log("POSTGRES ERROR");
     console.log(err);
-    return res.status(500).send({ message: "An error occured" });
+    return res
+      .status(500)
+      .send({ message: "An error occured inserting into the DB" });
   }
 });
 
