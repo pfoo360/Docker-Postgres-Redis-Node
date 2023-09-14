@@ -64,10 +64,14 @@ app.post("/", async (req, res) => {
   try {
     const { rows } = await postgres({
       queryString:
-        "INSERT INTO users(username, password, email) VALUES($1::text, $2::text, $3::text) RETURNING id, username, password, email, created_at, session_token",
+        "INSERT INTO users(username, password, email) VALUES($1::text, $2::text, $3::text) RETURNING id, username, email, password, created_at, session_token",
       valuesArr: [username, password, email],
     });
-    console.log(rows);
+
+    await set({
+      key: `SELECT * FROM users WHERE id = ${rows[0].id}`,
+      value: JSON.stringify(rows),
+    });
 
     return res.status(200).send({ message: "INSERT success", result: rows });
   } catch (err) {
