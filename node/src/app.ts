@@ -1,7 +1,7 @@
 import express from "express";
 import { postgres } from "./lib/postgres";
 import { get, set } from "./lib/redis";
-import { Insert } from "./types/types";
+import { PostBody } from "./types/types";
 
 const PORT = process.env.PORT || 3000;
 
@@ -55,7 +55,7 @@ app.get("/query", async (req, res) => {
 });
 
 app.post("/", async (req, res) => {
-  const { username, email, password }: Insert = req.body;
+  const { username, email, password }: PostBody = req.body;
   if (!username || !password || !email)
     return res
       .status(400)
