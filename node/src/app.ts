@@ -12,6 +12,11 @@ app.get("/", (req, res) => {
   res.send("Hello world!");
 });
 
+app.get("/query", (req, res) => {
+  console.log(req.query);
+  res.send("Hello world!");
+});
+
 app.post("/", async (req, res) => {
   const { username, email, password }: Insert = req.body;
   if (!username || !password || !email)
