@@ -53,4 +53,4 @@ const select = async (o: Select) => {
   }
 };
 
-export { insert, select };
+export { insert, select, postgres };
