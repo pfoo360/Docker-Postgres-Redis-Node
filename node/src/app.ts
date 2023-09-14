@@ -23,30 +23,29 @@ app.get("/query", async (req, res) => {
     key === "id" ? "=" : "ILIKE"
   } `;
 
-  const redisRes = await get({ key: `${querySubstring}${value}` });
-  if (redisRes)
-    return res
-      .status(200)
-      .send({ message: "Result found in cache", result: JSON.parse(redisRes) });
-
-  //if querying by any col besides 'id' we have to add % wildcard char
-  const valuesArr = [`${key === "id" ? value : `%${value}%`}`];
+  const redisResult = await get({ key: `${querySubstring}${value}` });
+  if (redisResult)
+    return res.status(200).send({
+      message: "Result found in cache",
+      result: JSON.parse(redisResult),
+    });
 
   try {
-    const pg_res = await postgres({
+    //if querying by any col besides 'id' we have to add % wildcard char
+    const { rows } = await postgres({
       queryString: `${querySubstring}$1`,
-      valuesArr,
+      valuesArr: [`${key === "id" ? value : `%${value}%`}`],
     });
-    console.log(pg_res);
 
-    set({
+    if (!rows.length)
+      return res.status(404).send({ message: "Does not exist" });
+
+    await set({
       key: `${querySubstring}${value}`,
-      value: JSON.stringify(pg_res.rows),
+      value: JSON.stringify(rows),
     });
 
-    res
-      .status(200)
-      .send({ message: "Result found in DB", result: pg_res.rows });
+    res.status(200).send({ message: "Result found in DB", result: rows });
   } catch (err) {
     console.log(err);
     res.status(500).send({ message: "An error occured" });
