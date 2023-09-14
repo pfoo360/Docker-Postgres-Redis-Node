@@ -16,6 +16,7 @@ const set = async ({ key, value }) => {
   try {
     await redis.connect();
     const res = await redis.set(key, value);
+    console.log(res);
   } catch (err) {
     console.log("REDIS SET ERROR");
     console.log(err);
