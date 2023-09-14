@@ -12,9 +12,31 @@ app.get("/", (req, res) => {
   res.send("Hello world!");
 });
 
-app.get("/query", (req, res) => {
-  console.log(req.query);
-  res.send("Hello world!");
+app.get("/query", async (req, res) => {
+  const [[key, value]] = Object.entries(req.query);
+
+  if (key !== "id" && key !== "username" && key !== "email")
+    return res
+      .status(400)
+      .send({ message: "QUERY can only be 'id' or 'username' or 'email'" });
+
+  //if querying by 'id' col we use '... WHERE id = ...' stmnt
+  //if querying by any other col we use '... WHERE [col_name] ILIKE ...' smnt
+  const queryString = `SELECT * FROM users WHERE ${key} ${
+    key === "id" ? "=" : "ILIKE"
+  } $1`;
+  //if querying by any col besides 'id' we have to add % wildcard char
+  const valuesArr = [`${key === "id" ? value : `%${value}%`}`];
+
+  try {
+    const pg_res = await postgres({ queryString, valuesArr });
+    console.log(pg_res);
+
+    res.status(200).send({ message: "SELECT success" });
+  } catch (err) {
+    console.log(err);
+    res.status(500).send({ message: "An error occured" });
+  }
 });
 
 app.post("/", async (req, res) => {
