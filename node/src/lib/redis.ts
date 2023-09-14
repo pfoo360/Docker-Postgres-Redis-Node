@@ -12,7 +12,7 @@ const redis = createClient({
 
 redis.on("error", (err) => console.log("Redis Client Error", err));
 
-const set = async ({ key, value }) => {
+const set = async ({ key, value }: { key: string; value: string }) => {
   try {
     await redis.connect();
     const res = await redis.set(key, value);
@@ -25,7 +25,7 @@ const set = async ({ key, value }) => {
   }
 };
 
-const get = async ({ key }) => {
+const get = async ({ key }: { key: string }) => {
   try {
     await redis.connect();
     const value = await redis.get(key);
