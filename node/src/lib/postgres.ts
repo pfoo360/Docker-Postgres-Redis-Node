@@ -10,6 +10,18 @@ const databaseUrl =
 
 const pool = new Pool({ connectionString: databaseUrl });
 
+const postgres = async ({ queryString, valuesArr }) => {
+  const pg = await pool.connect();
+  try {
+    const res = await pg.query(queryString, valuesArr);
+    return res;
+  } catch (err) {
+    throw err;
+  } finally {
+    pg.release();
+  }
+};
+
 const insert = async ({ username, password, email }: Insert) => {
   const db = await pool.connect();
   try {
