@@ -8,10 +8,6 @@ const app = express();
 
 app.use(express.json());
 
-app.get("/", (req, res) => {
-  res.send("Hello world!");
-});
-
 app.get("/query", async (req, res) => {
   const [[key, value]] = Object.entries(req.query);
 
