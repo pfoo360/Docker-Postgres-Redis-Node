@@ -10,6 +10,13 @@ services:
       - backend
     ports:
       - 5432:5432
+  cache:
+    image: redis:7.2.1-alpine
+    networks:
+      - backend
+    ports:
+      - 6379:6379
+    command: /bin/sh -c 'redis-server --appendonly yes --requirepass foobarbaz'
 networks:
   frontend:
   backend:
