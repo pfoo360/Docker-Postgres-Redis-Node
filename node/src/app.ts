@@ -42,6 +42,12 @@ app.get("/query", async (req, res) => {
       value: JSON.stringify(rows),
     });
 
+    if (!rows.length)
+      return res.status(404).send({
+        message: "No values found that matches that query",
+        result: rows,
+      });
+
     return res
       .status(200)
       .send({ message: "Result found in DB", result: rows });
