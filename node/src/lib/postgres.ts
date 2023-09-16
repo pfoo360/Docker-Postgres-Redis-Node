@@ -1,7 +1,7 @@
 import { Pool } from "pg";
 import fs from "fs";
 
-//postgresql:{user}:{password}@{host}:{port}/{db}
+//postgres:{user}:{password}@{host}:{port}/{db}
 
 const databaseUrl =
   process.env.DATABASE_URL ||
