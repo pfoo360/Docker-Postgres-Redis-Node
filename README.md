@@ -39,6 +39,14 @@ Node server that allows clients to save users info in a Postgres DB. A write-thr
 </br>
 </br>
 
+- Cache keys will live for 5 seconds. Once that time has passed, a cache miss + DB query occurs. Note the 'message' that comes through on the right hand side for each of the three pictures:
+
+![TTL_DB_1](./README_img/TTL_DB_1.png)  
+![TTL_CACHE](./README_img/TTL_CACHE.png)
+![TTL_DB_2](./README_img/TTL_DB_2.png)
+</br>
+</br>
+
 - If we query for information that does not exist, the same process occurs (only this time the data will be an empty array): check cache first, return cache data if cache hit, query DB and save to cache if cache miss. The first picture below shows the result of querying the DB (since this is the first time making this specific request) for data that does not exist. Next time we query for the same information will result in returning the empty array from the cache.
 
 ![404](./README_img/404.png)
