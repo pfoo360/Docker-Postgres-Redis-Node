@@ -19,10 +19,38 @@ Node server that allows clients to save users info in a Postgres DB. A write-thr
 - Bind or volume mounts could have been created to persist DB/cache data but I chose not to since this is a test project.
 - For dev purposes I could have created a volume mount with the 'node' folder so code could have been updated inside the 'server' container without having to rebuild the image (would also need to update Dockerfile with a new stage that allows hot-reloading). This project was small enough where that was unnecessary but is something to consider on larger projects.
 
-# To Do
+# Walkthrough
 
-- Add TTL to Redis items
-- Add walkthrough to README
+- Using Thunder Client we send a POST request from localhost:3000. This gets forwarded to port 3000 in 'server' container. The server will INSERT the user info into the postgres DB, found in 'database' container. The server will return a message and the user info upon successful save (found on the right hand side below):
+
+![POST](./README_img/POST.png)
+</br>
+</br>
+
+- Now, we can fetch information from the server. First, the server checks the cache to see if data pertaining to the query exists. If it does exist in the cache, the server will return the cache hit. If there is a cache miss, we make a trip to the DB and then save the DB result into the cache (cache-aside). In the picture below, since this is the first time we are running this specific fetch, the data is not in the cache, so we have to get the information from the DB instead. The DB query result will be saved in the cache.
+
+![DB](./README_img/DB.png)
+</br>
+</br>
+
+- Every subsequent fetch for this information will now result in a cache hit- we do not need to query the DB.
+
+![CACHE](./README_img/CACHE.png)
+</br>
+</br>
+
+- If we query for information that does not exist, the same process occurs (only this time the data will be an empty array): check cache first, return cache data if cache hit, query DB and save to cache if cache miss. The first picture below shows the result of querying the DB (since this is the first time making this specific request) for data that does not exist. Next time we query for the same information will result in returning the empty array from the cache.
+
+![404](./README_img/404.png)
+![404_CACHE](./README_img/404_CACHE.png)
+</br>
+</br>
+
+# Things That Can Be Improved
+
+- Add TTL so Redis items can expire
+- Config Redis to take snapshot to save data + volume
+- Move Redis password out of docker-compose.yml
 
 # References
 
