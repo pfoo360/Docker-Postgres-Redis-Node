@@ -17,7 +17,7 @@ Node server that allows clients to save users info in a Postgres DB. A write-thr
 - The cache uses sql queries as keys. This can result in stale data being sent back to the client on occasions.
 - Secrets (Docker Swarm or Kubernetes) would be the ideal way for storing DB/cache URLs and passwords, but were beyond the scope of this exercise. Instead, secret .txt files are manually copied over to /run/secrets/ directory to simulate the process of consuming secrets.
 - Bind or volume mounts could have been created to persist DB/cache data but I chose not to since this is a test project.
-- For dev purposes I could have created a volume mount with the 'node' folder so code could have been updated inside the 'server' container without having to rebuild the image (would also need to update Dockerfile with a new stage that allows hot-reloading). This project was small enough where that was unnecessary but is something to consider on larger projects.
+- For dev purposes I could have created a volume mount with the 'node' folder so code could be updated inside the 'server' container without having to rebuild the image (would also need to update Dockerfile with a new stage that allows hot-reloading). This project was small enough where that was unnecessary but is something to consider on larger projects.
 
 # Walkthrough
 
