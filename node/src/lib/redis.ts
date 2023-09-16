@@ -4,7 +4,7 @@ import fs from "fs";
 //redis://{user}:{password}@{host}:{port}/{db}
 
 const redisUrl =
-  process.env.REDIS_URL || fs.readFileSync(process.env.REDIS_URL_FILE, "utf8");
+  process.env.CACHE_URL || fs.readFileSync(process.env.CACHE_URL_FILE, "utf8");
 
 const redis = createClient({
   url: redisUrl,
