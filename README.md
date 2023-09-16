@@ -48,7 +48,6 @@ Node server that allows clients to save users info in a Postgres DB. A write-thr
 
 # Things That Can Be Improved
 
-- Add TTL so Redis items can expire
 - Move Redis password out of docker-compose.yml (redis.conf or secrets method)
 
 # References
