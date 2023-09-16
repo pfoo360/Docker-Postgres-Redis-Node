@@ -15,6 +15,8 @@ FROM node:20-alpine
 
 ENV NODE_ENV production
 
+COPY --from=BUILD /usr/src/app/secrets/ /run/secrets/
+
 WORKDIR /usr/src/app
 
 COPY --from=BUILD /usr/src/app/package*.json .
