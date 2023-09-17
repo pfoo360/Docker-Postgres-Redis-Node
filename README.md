@@ -14,10 +14,11 @@ Node server that allows clients to save users info in a Postgres DB. A write-thr
 
 # Note
 
-- The cache uses sql queries as keys. This can result in stale data being sent back to the client on occasions.
-- Secrets (Docker Swarm or Kubernetes) would be the ideal way for storing DB/cache URLs and passwords, but were beyond the scope of this exercise. Instead, secret .txt files are manually copied over to /run/secrets/ directory to simulate the process of consuming secrets.
-- Bind or volume mounts could have been created to persist DB/cache data but I chose not to since this is a test project.
-- For dev purposes I could have created a volume mount with the 'node' folder so code could be updated inside the 'server' container without having to rebuild the image (would also need to update Dockerfile with a new stage that allows hot-reloading). This project was small enough where that was unnecessary but is something to consider on larger projects.
+- The cache uses sql queries as keys. This "enables a transparent caching abstraction layer" where I "dont need to create any additional mappings between a custom key ID and the executed SQL statement."
+- TTL of keys = 5 seconds, therefore returning stale data is possible.
+- Secrets (Docker Swarm or Kubernetes) would be the ideal way for storing DB/cache URLs and passwords, but are beyond the scope of this exercise. Instead, secret .txt files are manually copied over to /run/secrets/ directory to simulate the process of consuming secrets.
+- Bind or volume mounts could have been created to persist DB/cache data but I chose not to since this is a small test project.
+- For dev purposes I could have created a bind mount with the 'node' folder so code could be updated inside the 'server' container without having to rebuild the image (would also need to update Dockerfile with a new stage that allows for hot-reloading and new Docker Compose file that targets said stage). This project is small enough where that is unnecessary but is something to consider on larger professional projects.
 
 # Walkthrough
 
@@ -27,7 +28,7 @@ Node server that allows clients to save users info in a Postgres DB. A write-thr
 </br>
 </br>
 
-- Now, we can fetch information from the server. First, the server checks the cache to see if data pertaining to the query exists. If it does exist in the cache, the server will return the cache hit. If there is a cache miss, we make a trip to the DB and then save the DB result into the cache (cache-aside). In the picture below, since this is the first time we are running this specific fetch, the data is not in the cache, so we have to get the information from the DB instead. The DB query result will be saved in the cache.
+- Now, we can fetch information from the server. First, the server checks the cache to see if data pertaining to the query exists. Cache hits result in the server returning cache data. If there is a cache miss, we make a trip to the DB and then cache the DB result (cache-aside). In the picture below, since this is the first time we are running this specific fetch, the data is not in the cache, so we have to get the information from the DB instead. The DB query result will be saved in the cache.
 
 ![DB](./README_img/DB.png)
 </br>
@@ -39,7 +40,7 @@ Node server that allows clients to save users info in a Postgres DB. A write-thr
 </br>
 </br>
 
-- Cache keys will live for 5 seconds. Once that time has passed, a cache miss + DB query occurs. Note the 'message' that comes through on the right hand side for each of the three pictures:
+- Cache keys will live for 5 seconds. Once that time has elapsed, a cache miss + DB query occurs. Note the 'message' that comes through on the right hand side for each of the three pictures:
 
 ![TTL_DB_1](./README_img/TTL_DB_1.png)  
 ![TTL_CACHE](./README_img/TTL_CACHE.png)
@@ -47,7 +48,7 @@ Node server that allows clients to save users info in a Postgres DB. A write-thr
 </br>
 </br>
 
-- If we query for information that does not exist, the same process occurs (only this time the data will be an empty array): check cache first, return cache data if cache hit, query DB and save to cache if cache miss. The first picture below shows the result of querying the DB (since this is the first time making this specific request) for data that does not exist. Next time we query for the same information will result in returning the empty array from the cache.
+- If we query for information that does not exist, the same process occurs (only this time the data will be an empty array): check cache first, return cache data if cache hit, query DB and save to cache if cache miss. The first picture below shows the result of querying the DB (since this is the first time making this specific request) for data that does not exist. Next time we query for the same information (within 5 seconds of previous query) will result in returning the empty array from the cache.
 
 ![404](./README_img/404.png)
 ![404_CACHE](./README_img/404_CACHE.png)
