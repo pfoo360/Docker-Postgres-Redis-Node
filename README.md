@@ -54,10 +54,6 @@ Node server that allows clients to save users info in a Postgres DB. A write-thr
 </br>
 </br>
 
-# Things That Can Be Improved
-
-- Move Redis password out of docker-compose.yml (redis.conf or secrets method)
-
 # References
 
 - [AWS Whitepaper on caches](https://docs.aws.amazon.com/whitepapers/latest/database-caching-strategies-using-redis/welcome.html)
