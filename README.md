@@ -58,3 +58,6 @@ Node server that allows clients to save users info in a Postgres DB. A write-thr
 # References
 
 - [AWS Whitepaper on caches](https://docs.aws.amazon.com/whitepapers/latest/database-caching-strategies-using-redis/welcome.html)
+- [Docker Crash Course](https://www.youtube.com/playlist?list=PL4cUxeGkcC9hxjeEtdHFNYMtCpjNBm3h7)
+- [Docker Beginner to Pro](https://www.youtube.com/watch?v=RqTEHSBrYFw)
+- [Docker Best Practices For Prod](https://www.youtube.com/watch?v=8vXoMqWgbQQ)
